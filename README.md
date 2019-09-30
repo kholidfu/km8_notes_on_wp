@@ -2,11 +2,68 @@
 
 ## Template
 
-## Important to read
-URL untuk gallery index --> /km/ templatenya ada di `page.php`
-untuk sub-page nya -> `gallery-sitemap-page.php`
+### Pagination
 
-ke depan mungkin perlu dirapiken...
+#### ex-1
+```
+<div class="pagination-block">
+  <?php
+    $total_pages = $wp_query->max_num_pages;
+    // echo $total_pages;
+    $total_posts = $wp_query->found_posts;
+    $current_page = max(1, get_query_var('paged'));
+    $current_post_number = (($current_page - 1) * $post_limit) + 1;
+    // TODO perkalian antara var paged dengan post_limit + post_limit
+  ?>
+  <p class="coutn-posts">
+    <span>Showing</span> <?php echo $current_post_number; ?>–<?php echo min($total_posts, (($current_page - 1) * $post_limit) + $post_limit); ?> of <?php echo $total_posts; ?> posts
+  </p>
+  <div class="pagination">
+    <?php
+      // $total_pages = $wp_query->max_num_pages;
+      // echo $total_pages;
+
+      if ($total_pages > 1) {
+  
+        echo paginate_links(array(
+          'base' => get_pagenum_link(1) . '%_%',
+          'format' => 'page/%#%/',
+          'current' => $current_page,
+          'total' => $total_pages,
+        ));
+      }
+    ?>
+    <!-- <span aria-current="page" class="page-numbers current">1</span>
+    <a class="page-numbers" href="#">2</a>
+    <a class="next page-numbers" href="#"><i class="fa fa-angle-right"></i></a> -->
+  </div><!-- End .pagination -->
+</div><!-- End .pagination-block -->
+```
+#### ex-2 (simple)
+```
+<div class="mh-loop-pagination mh-clearfix">
+  <nav class="navigation pagination" role="navigation">
+    <h2 class="screen-reader-text">Posts navigation</h2>
+    <div class="nav-links">
+    <?php
+      $total_pages = $wp_query->max_num_pages;
+      // echo $total_pages;
+
+      if ($total_pages > 1){
+        $current_page = max(1, get_query_var('paged'));
+
+        echo paginate_links(array(
+          'base' => get_pagenum_link(1) . '%_%',
+          'format' => '/page/%#%',
+          'current' => $current_page,
+          'total' => $total_pages,
+        ));
+      }
+    ?>
+    </div>
+  </nav>
+</div>
+```
 
 ### Turn on debug
 go to `wp-config.php` change 
@@ -16,11 +73,6 @@ go to `wp-config.php` change
 to
 
 `define( 'WP_DEBUG', true );`
-
-### How to Use this template
-- setting wordpress di hosting
-- setting permalink ke `Post name`
-- 
 
 ### Create custom thumbnail size (hard crop)
 1. Tambahkan baris berikut di `functions.php`
@@ -33,7 +85,7 @@ to
 
 2. Panggil di template menggunakan fungsi berikut:
 ```
-   <?php echo wp_get_attachment_image($attachment->ID, 'custom-size', false, array('alt' => 'asdasdas', 'title' => 'asdasdsa')); ?>
+   <?php echo wp_get_attachment_image($attachment->ID, 'custom-size', false, array('alt' => 'my pretty image alt', 'title' => 'my pretty image title')); ?>
 ```
 
 ### Calling wp built-in func from outside world
